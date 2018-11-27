@@ -1,0 +1,446 @@
+#include<stdio.h>
+#include<windows.h>
+#include<time.h>
+#include <string.h>
+#include<conio.h>
+#include<stdlib.h>
+#include<mmsystem.h>
+#pragma comment(lib,"winmm.lib")
+struct Student//定义结构体
+{
+	char name[20];	
+	char num[10];
+}std;
+int L(int a)//控制多少以内运算函数
+{
+	int b;
+	if(a==1)
+		b=20;
+	if(a==2)
+		b=50;
+	if(a==3)
+		b=100;
+	return b;
+}
+void loadin()
+{
+	printf("******************************************\n");
+    printf("*        小学数学整数加减测试系统        *\n");
+	printf("*                                        *\n");
+	printf("*请输入姓名：                            *\n");
+	scanf("%s",std.name );
+}
+void help()
+{
+	char ask/*询问是否错题重做*/,choose/*是否需要帮助*/;
+	getchar();
+	printf("*              是否帮助Y/N               *\n");	
+	scanf("%c",&ask);
+	if(ask=='Y')
+	{
+		printf("*                A题目类型               *\n");
+		printf("*                B题目难度               *\n");
+		printf("*                C开始测试               *\n");
+		printf("*                D提交答案               *\n");
+		printf("*                E答题情况               *\n");
+		printf("*                F下载错题               *\n");
+		printf("*                G错题重做               *\n");
+		printf("*                H核对答案               *\n");
+		printf("*                                        *\n");
+		printf("*              按0退出帮助菜单           *\n");
+		printf("选择菜单:");
+		getchar();
+		scanf("%c",&choose);
+	}
+	while(ask=='Y'&&choose!='0')
+	{
+		
+		if(choose=='A')
+		{
+			printf("*                T…填空题               *\n");
+			printf("*                X…选择题               *\n");
+			printf("*                T…两则运算             *\n");
+			printf("*                F…四则运算             *\n");
+		}
+		if(choose=='B')
+		{
+			printf("*       简单…10个20以内加减乘除运算     *\n");
+			printf("\n");
+			printf("*       一般…10个50以内加减乘除运算     *\n");
+			printf("\n");
+			printf("*       困难…10个100以内加减乘除运算    *\n");
+		}
+		if(choose=='C')
+		{
+			printf("*         用户需完成系统随机出题         *\n");
+			printf("\n");
+			printf("*            系统此时开始计时            *\n");
+		}	
+		if(choose=='D')
+		{
+			printf("*                计时结束                *\n");
+			printf("*                答题完成                *\n");
+		}
+		if(choose=='E')
+		{
+			printf("*                显示姓名                *\n"); 
+			printf("*                答对和答错的题目数      *\n"); 
+			printf("*                得分                    *\n");
+			printf("*                用时                    *\n");
+		}
+		if(choose=='F')
+		{
+			printf("*              系统统计出错题            *\n");
+			printf("\n");
+			printf("*                生成错题本              *\n");
+			printf("\n");
+			printf("*       可以选择下载错题或所有题目       *\n");
+		}
+		if(choose=='G')
+		{
+			printf("*        用户重新计算系统统计出的错题    *\n");
+		}
+		if(choose=='H')
+		{
+			printf("*          用户核对错题重做的情况        *\n");
+			printf("\n");
+			printf("*       删除用户错题本中已经答对的错题   *\n");	
+		}
+		printf("选择菜单:");
+		getchar();
+		scanf("%c",&choose);
+	}
+}
+void download()
+{
+	printf("试题已保存\n全部试题文件位于D盘fp.txt\n");
+	printf("错题文件位于D盘failequest.txt\n");
+	
+}
+void sprint(char *s,int sleep)
+{
+	int i=0;
+	while(s[i]!='\0')
+	{
+		printf("%c",s[i]);
+		Sleep(sleep);
+		i++;
+	}
+}
+void welcome()
+{
+	system("color 07");
+	PlaySound("D:\\dlam.wav",NULL,SND_ASYNC|SND_FILENAME);
+	printf("\n");
+	printf(" * * * * * * * * * * * * * * * *\n");
+	printf("\n");
+    printf(" *");
+	sprint("~~~小朋友们，开始做题吧！~~~",100);
+	printf(" *\n");
+    printf(" *                             *\n");
+    printf(" *                             *\n");
+    printf(" *         ");
+	sprint("加油哦！",100);
+	printf("            *\n");
+	printf(" *                             *\n");
+	printf(" * * * * * * * * * * * * * * * *\n");
+	printf("              ENTER             \n");
+	while(getchar()==0);
+	system("cls");
+}
+int main()
+{
+	int a,b,num1/*加数1*/,number=0,num2/*加数2*/,num3/*正确答案*/,num4/*用户答案*/,count1=0/*正确个数*/,count2=0/*错误个数*/,i/*题目个数*/,quest[10];
+	int c1,c2,c3/*三个随机选项*/,x,j,temp/*冒泡排序*/,ch[5]/*数组*/,h/*选项对应数字*/,chb1,chb2/*tiankong*/,ans2;
+	char hostans/*用户选项*/,c/*fgetc*/,tx/*题目类型*/,tx2/*运算符号个数*/,rc[4]={'A','B','C','D'}/*ABCD*/;
+	char ask/*询问是否错题重做*/,rcans/*正确选项*/,cha1,cha2/*zuihou*/,o[1000];
+	int ans,k=0;
+	double TIME;//时间
+	DWORD start,end;//开始和结束时间
+	FILE *fp,*fp2,*fp3,*fp4,*fp5,*fp6,*fp7;//定义文件
+	welcome();
+	loadin();
+	help();
+	system("cls");
+	getchar();
+	printf("******************************************\n");
+	printf("            请选择题目类型T/X             \n");
+	scanf("%c",&tx);
+	getchar();
+	printf("           两则运算T/四则运算F            \n");
+	scanf("%c",&tx2);
+	printf("             请选择难度系数               \n");
+	printf("                  1.简单                  \n");
+	printf("                  2.一般                  \n");
+	printf("                  3.困难                  \n");
+    printf("******************************************\n");
+	scanf("%d",&a);
+	b=L(a);
+	getchar();//加在此处
+	printf("*            开始测试？Y/N               *\n");	
+	scanf("%c",&ask);
+	system("cls");
+	fp=fopen("D:\\fp.txt","w");//用户做的所有题目
+	fp2=fopen("D:\\failequest.txt","w");//错题
+	fp3=fopen("D:\\ranswer.txt","w");//错题及对答案
+	fp4=fopen("D:\\nanswer.txt","w");//用户答案
+	fp5=fopen("D:\\rans.txt","w");
+	fp6=fopen("D:\\geng.txt","w");
+	fp7=fopen("D:\\infor.txt","w+");//用户信息
+	fp=fopen("D:\\fp.txt","w+");//用户做的所有题目
+	fp2=fopen("D:\\failequest.txt","a+");//错题
+	fp3=fopen("D:\\ranswer.txt","a+");//错题及正确答案
+	fp4=fopen("D:\\nanswer.txt","a+");//用户答案
+	fp5=fopen("D:\\rans.txt","a+");//正确答案
+	fp7=fopen("D:\\infor.txt","w+");
+	fp6=fopen("D:\\geng.txt","a+");
+	if(ask=='Y')
+	{
+		start=GetTickCount();
+		srand((unsigned)time(NULL));
+		for(i=0;i<10;i++)
+		{
+			int op;
+			char ops[4]={'+','-','*','/'};
+			if(tx2=='T')
+				op=rand()%2;
+			if(tx2=='F')
+				op=rand()%4;
+			num1=0;
+			while(num1==0)
+				num1=rand()%b;
+			switch (op)
+			{
+				case 0:
+					num2=rand()%b;
+					num3=num1+num2;
+					break;
+				case 1:
+					num2=rand()%num1;
+					num3=num1-num2;
+					break;
+				case 2:
+					num2=rand()%b;
+					num3=num1*num2;
+					break;			
+				case 3:
+					num2=0;
+					while(num2==0||num1%num2!=0)
+						num2=rand()%num1;
+					num3=num1/num2;
+					break;
+				
+			}//switch
+			if(tx=='X')
+			{
+				c1=rand()%(2*b);
+				c2=rand()%(2*b);
+				c3=rand()%(2*b);
+				ch[0]=c1;ch[1]=c2;ch[2]=c3;ch[3]=num3;
+				for(x=0;x<3;x++)
+				{
+					for(j=x+1;j<4;++j)
+					{
+						if(ch[x]<ch[j])
+						{
+							temp=ch[x];
+							ch[x]=ch[j];
+							ch[j]=temp;
+						}
+					}
+				}//冒泡排序
+				temp=ch[3];
+				ch[3]=ch[2];
+				ch[2]=temp;
+				temp=ch[0];
+				ch[0]=ch[1];
+				ch[1]=temp;
+				getchar();
+				printf("%d%c%d=\n",num1,ops[op],num2);
+				printf("A %d  B %d  C %d  D %d\n",ch[0],ch[1],ch[2],ch[3]);
+				scanf("%c",&hostans);
+				if(hostans=='A'||hostans=='B'||hostans=='C'||hostans=='D')
+				{
+					if(hostans=='A')
+						h=0;
+					if(hostans=='B')
+						h=1;
+					if(hostans=='C')
+						h=2;
+					if(hostans=='D')
+						h=3;
+				}
+				else
+				{
+					h=4;
+					ch[4]='E';
+				}
+				if(ch[h]==num3)
+				{
+					fprintf(fp,"%2d%c%2d=  %c  √\nA %d  B %d  C %d  D %d\n",num1,ops[op],num2,hostans,ch[0],ch[1],ch[2],ch[3]);
+					count1++;
+				}
+				
+				
+				
+				else
+				{
+					for(j=0;j<4;j++)
+					{
+						if(ch[j]==num3)
+							break;
+					}
+					rcans=rc[j];	//正确选项以便输出				
+					fprintf(fp,"%2d%c%2d=  %c  ×\nA. %d  B. %d  C. %d  D. %d\n",num1,ops[op],num2,hostans,ch[0],ch[1],ch[2],ch[3]);
+					fprintf(fp2,"%2d%c%2d\nA. %d  B. %d  C. %d  D. %d   =\n",num1,ops[op],num2,ch[0],ch[1],ch[2],ch[3]);
+					fprintf(fp3,"%2d%c%2d=  %c\nA. %d  B. %d  C. %d  D. %d\n",num1,ops[op],num2,rcans,ch[0],ch[1],ch[2],ch[3]);
+					
+					fprintf(fp5,"%c",rcans);//fp5是错题正确答案
+					count2++;
+				}
+			}
+			if(tx=='T')
+			{
+				printf("%d%c%d=",num1,ops[op],num2);
+				scanf("%d",&num4);
+				if(num3==num4)
+				{
+					fprintf(fp,"%2d%c%2d=%2d   √\n",num1,ops[op],num2,num4);//FP用于输出做题情况
+					count1++;
+				}//if
+				else
+				{
+					fprintf(fp,"%2d%c%2d=%2d   ×\n",num1,ops[op],num2,num4);
+					fprintf(fp5,"%d ",num3);//fp5是错题正确答案
+					count2++;
+					fprintf(fp3,"%2d%c%2d=%2d\n",num1,ops[op],num2,num3);//
+					fprintf(fp2,"%d%c%d=\n",num1,ops[op],num2);
+				}//else
+			}//	填空题部分			
+		}//题目个数for循环
+		getchar();
+		printf("*             是否提交Y/N                   *：\n");
+		scanf("%c",&ask);
+		system("cls");
+		if(ask=='Y')
+		{
+			end=GetTickCount();
+			TIME=(end-start)/1000;	
+			system("cls");
+			printf("*             答题情况                   *：\n");		
+			printf("学号 %s\n姓名 %s\n答对%d个，答错%d个 得分：%d  用时：%.3f秒\n",std.num,std.name ,count1,count2,count1,TIME);
+			fprintf(fp7,"%s   %d  %.3f\n",std.name,count1,TIME);
+			rewind(fp);
+			while(!feof(fp))
+			{
+				c=fgetc(fp);
+				printf("%c",c);
+			}
+			getchar();
+			printf("*            错题重做Y/N               *\n");
+			scanf("%c",&ask);
+			system("cls");
+			if(ask=='Y')
+			{
+				rewind(fp2);
+				rewind(fp3);
+				if(fp2==NULL)				
+					printf("fail");
+				while(!feof(fp2))
+				{
+					c=fgetc(fp2);
+					printf("%c",c);
+					if(c=='=')
+					{
+						if(tx=='X')
+						{
+							getchar();
+							scanf("%c",&ans);//输入答案
+							fprintf(fp4,"%c",ans);
+						}
+						if(tx=='T')
+						{
+							getchar();
+							scanf("%d",&ans2);//输入答案
+							fprintf(fp4,"%d ",ans2);
+						}
+					}
+				}
+				printf("*              核对答案              *\n");
+				rewind(fp3);
+				rewind(fp2);
+				rewind(fp4);
+				rewind(fp5);
+				while(!feof(fp2))
+				{
+					c=fgetc(fp2);
+					printf("%c",c);
+					if(c=='=')
+					{
+	
+						if(tx=='X')
+						{
+							number=number+2;
+							cha1=fgetc(fp4);
+							cha2=fgetc(fp5);
+							if(cha1==cha2)
+							{
+								printf("%c    %c  √",cha1,cha2);
+							}
+							else
+							{
+								quest[k]=number-1;
+								quest[k+1]=number;
+								k=k+2;
+								printf("%c    %c  ×",cha1,cha2);
+							}
+						}
+						else
+						{
+							number++;
+							fscanf(fp4,"%d",&chb1);
+							fscanf(fp5,"%d",&chb2);
+							if(chb1==chb2)
+							{
+								printf("%5d    %5d  √",chb1,chb2);
+							}
+							else
+							{
+								quest[k]=number;
+								k++;
+								printf("%5d    %5d  ×",chb1,chb2);
+							}
+						}//else
+					}
+				}		
+			}
+		}
+	}
+	number=0;
+	k=0;
+	rewind (fp2);
+	while(fgets(o,1000,fp2))
+	{
+		number++;
+		if(number==quest[k])
+		{
+			fputs(o,fp6);
+			k++;
+		}
+	}
+	fp2=fopen("D:\\failequest.txt","w");//错题
+	fp2=fopen("D:\\failequest.txt","a+");//错题
+	rewind (fp6);
+	while(fgets(o,1000,fp6))
+		fputs(o,fp2);
+	download();
+	printf("*            查看排名Y             *\n");
+	scanf("%c",&ans);
+	if(ans=='Y')
+	{
+		while(fgets(o,1000,fp7))
+			printf("%s",o);
+	}
+
+	return 0;
+}
